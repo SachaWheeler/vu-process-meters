@@ -12,15 +12,21 @@ arduino = serial.Serial(port=TTY_PORT, baudrate=BAUDRATE, timeout=.1)
 
 def write_read(x):
     arduino.write(bytes(x, 'utf-8'))
-    time.sleep(0.05)
+    time.sleep(0.1)
     resp = arduino.readline()
     return resp
 
+for n in range(1,255,10):
+    print(n)
+    print(write_read(f"{n},{n}\r"))
+    time.sleep(2)
+# 255 and 2.55 are veruy uncertain
 while True:
-    ram=int(psutil.virtual_memory().percent * 2.55)
-    cpu=int(psutil.cpu_percent() * 2.55)
+    break
+    ram=int(psutil.virtual_memory().percent)
+    cpu=int(psutil.cpu_percent())
     response = write_read(f"{ram},{cpu}\r")
-    print(response)
+    print(ram, cpu, response)
 
     sleep(0.5)
     # break
