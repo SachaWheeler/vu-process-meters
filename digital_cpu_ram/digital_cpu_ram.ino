@@ -12,6 +12,9 @@ LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);  // Change to (0x27,20,4
 
 void setup() {
   Serial.begin(115200);
+
+  pinMode(LED_BUILTIN_TX, INPUT);
+  pinMode(LED_BUILTIN_RX, INPUT);
   // Initiate the LCD:
   lcd.init();
   lcd.backlight();
