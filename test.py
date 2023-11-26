@@ -13,6 +13,7 @@ print(f"""
 {psutil.cpu_stats()=}
 {psutil.cpu_freq()=}
 {psutil.getloadavg()=}
+{psutil.disk_usage('/')=}
 {psutil.disk_usage('/').percent=}
 
         """)

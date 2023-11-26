@@ -1,32 +1,29 @@
-# Importing Libraries
+#!/usr/bin/env python
 import serial
-import time
-
 from time import sleep
 import psutil
 
 TTY_PORT = "/dev/ttyACM0"
 BAUDRATE=115200
 
-arduino = serial.Serial(port=TTY_PORT, baudrate=BAUDRATE, timeout=.1)
+# Open a serial connection (adjust the port and baudrate accordingly)
+ser = serial.Serial(TTY_PORT, BAUDRATE)
 
-def write_read(x):
-    arduino.write(bytes(x, 'utf-8'))
-    time.sleep(0.1)
-    resp = arduino.readline()
-    return resp
+# Function to send values to Arduino
+def send_values(value1, value2):
+    data = f"{value1},{value2}\n"
+    # print(data.strip())
+    ser.write(data.encode())
+    sleep(0.1)  # Allow time for Arduino to process
 
-for n in range(1,255,10):
-    print(n)
-    print(write_read(f"{n},{n}\r"))
-    time.sleep(1)
-# 255 and 2.55 are veruy uncertain
+print("Server running...")
 while True:
-    break
-    ram=int(psutil.virtual_memory().percent)
-    cpu=int(psutil.cpu_percent())
-    response = write_read(f"{ram},{cpu}\r")
-    print(ram, cpu, response)
+    ram=float(psutil.virtual_memory().percent)
+    cpu=float(psutil.cpu_percent())
+    send_values(ram, cpu)
 
-    sleep(0.5)
-    # break
+    sleep(1)
+
+# Close the serial connection
+ser.close()
+
