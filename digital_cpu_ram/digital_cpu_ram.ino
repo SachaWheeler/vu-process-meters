@@ -32,12 +32,12 @@ void loop() {
 
     // Display values on the LCD
     lcd.clear();
-    lcd.setCursor(2, 0);
+    lcd.setCursor(3, 0);
     lcd.print("Ram: ");
     lcd.print(ram, 1);
     lcd.print("%");
 
-    lcd.setCursor(2, 1);
+    lcd.setCursor(3, 1);
     lcd.print("Cpu: ");
     lcd.print(cpu, 1);
     lcd.print("%");
