@@ -7,27 +7,22 @@ TTY_PORT = "/dev/ttyACM0"
 BAUDRATE = 115200
 UPDATE_DELAY = 1
 
-# Open a serial connection (adjust the port and baudrate accordingly)
 ser = serial.Serial(TTY_PORT, BAUDRATE)
 
 io = psutil.net_io_counters()
-# extract the total bytes sent and received
 bytes_sent, bytes_recv = io.bytes_sent, io.bytes_recv
 
-# Function to send values to Arduino
-def send_values(ram, cpu, up, down):
-    # \1 and \2 are up and doown arrows defined in the arduino
+def send_values(ram, cpu, up, dn):
+    # \1 and \2 are up and down arrows defined in the arduino
     data = (f"R {ram:>4}% \1{get_size(up):>7},"
-            f"C {cpu:>4}% \2{get_size(down):>7}\n")
-    # print(data.strip())
-    ser.write(data.encode())
-    # 1sleep(0.1)  # Allow time for Arduino to process
+            f"C {cpu:>4}% \2{get_size(dn):>7}\n")
 
-# format bytes
+    ser.write(data.encode())
+
 def get_size(bytes):
-    for unit in ['', 'K', 'M', 'G', 'T', 'P']:
+    for unit in ['B', 'K', 'M', 'G']:
         if bytes < 1024:
-            return f"{bytes/UPDATE_DELAY:.1f}{unit}B"
+            return f"{bytes/UPDATE_DELAY:.1f}{unit}"
         bytes /= 1024
 
 print("Server running...")
@@ -40,8 +35,10 @@ while True:
     io_2 = psutil.net_io_counters()
     us, ds = io_2.bytes_sent - bytes_sent, io_2.bytes_recv - bytes_recv
 
-    send_values(ram, cpu, us, ds)
+    # update values
     bytes_sent, bytes_recv = io_2.bytes_sent, io_2.bytes_recv
+
+    send_values(ram, cpu, us, ds)
 
 ser.close()
 
