@@ -10,6 +10,26 @@
 // Connect to LCD via I2C, default address 0x27 (A0-A2 not jumpered)
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);  // Change to (0x27,20,4) for 20x4 LCD.
 
+byte up_arrow[8] = {
+  B00100,
+  B01110,
+  B10101,
+  B00100,
+  B00100,
+  B00100,
+  B00100,
+};
+
+byte down_arrow[8] = {
+  B00100,
+  B00100,
+  B00100,
+  B00100,
+  B10101,
+  B01110,
+  B00100,
+};
+
 void setup() {
   Serial.begin(115200);
 
@@ -18,6 +38,9 @@ void setup() {
   // Initiate the LCD:
   lcd.init();
   lcd.backlight();
+
+  lcd.createChar(0, up_arrow);
+  lcd.createChar(1, down_arrow);
 
   lcd.setCursor(2, 0);  // Set the cursor on the third column and first row.
   lcd.print("Start demon!");
@@ -40,42 +63,11 @@ void loop() {
 
     lcd.setCursor(0, 1);
     lcd.print(line_2);
+
+    lcd.setCursor(8, 0);
+    lcd.write((byte)0);  // Display the up_arrow character
+
+    lcd.setCursor(8, 1);
+    lcd.write((byte)1);  // Display the down_arrow character
   }
 }
-
-/*
-#include <LiquidCrystal_I2C.h>
-
-// Define LCD properties
-LiquidCrystal_I2C lcd(0x27, 16, 2);  // I2C address 0x27, 16 columns, 2 rows
-
-void setup() {
-  // Initialize serial communication and LCD
-  Serial.begin(115200);
-  lcd.init();
-  lcd.begin(16, 2);
-  lcd.backlight();  // Turn on the backlight
-}
-
-void loop() {
-  if (Serial.available() > 0) {
-    // Read the incoming data until a newline character is received
-    String data = Serial.readStringUntil('\n');
-
-    // Parse the comma-separated values
-    int value1 = data.substring(0, data.indexOf(',')).toInt();
-    int value2 = data.substring(data.indexOf(',') + 1).toInt();
-
-    // Display values on the LCD
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Value 1: ");
-    lcd.print(value1);
-
-    lcd.setCursor(0, 1);
-    lcd.print("Value 2: ");
-    lcd.print(value2);
-  }
-}
-
-*/
