@@ -16,7 +16,9 @@ bytes_sent, bytes_recv = io.bytes_sent, io.bytes_recv
 
 # Function to send values to Arduino
 def send_values(ram, cpu, up, down):
-    data = f"{ram},{cpu},{up},{down}\n"
+    # data = f"{ram},{cpu},{up},{down}\n"
+    data = (f"R {ram:>4}% ^{get_size(up):>7},"
+            f"C {cpu:>4}% v{get_size(down):>7}\n")
     # print(data.strip())
     ser.write(data.encode())
     # 1sleep(0.1)  # Allow time for Arduino to process
@@ -25,7 +27,7 @@ def send_values(ram, cpu, up, down):
 def get_size(bytes):
     for unit in ['', 'K', 'M', 'G', 'T', 'P']:
         if bytes < 1024:
-            return f"{bytes/UPDATE_DELAY:.1f}{unit}B/s"
+            return f"{bytes/UPDATE_DELAY:.1f}{unit}B"
         bytes /= 1024
 
 print("Server running...")
@@ -38,7 +40,8 @@ while True:
     io_2 = psutil.net_io_counters()
     us, ds = io_2.bytes_sent - bytes_sent, io_2.bytes_recv - bytes_recv
 
-    send_values(ram, cpu, get_speed(us), get_speed(ds))
+    send_values(ram, cpu, us, ds)
+    bytes_sent, bytes_recv = io_2.bytes_sent, io_2.bytes_recv
 
 ser.close()
 

@@ -30,20 +30,16 @@ void loop() {
     String data = Serial.readStringUntil('\n');
 
     // Parse the comma-separated values
-    float ram = data.substring(0, data.indexOf(',')).toFloat();
-    float cpu = data.substring(data.indexOf(',') + 1).toFloat();
+    String line_1 = data.substring(0, data.indexOf(','));
+    String line_2 = data.substring(data.indexOf(',') + 1);
 
     // Display values on the LCD
     lcd.clear();
-    lcd.setCursor(3, 0);
-    lcd.print("Ram: ");
-    lcd.print(ram, 1);
-    lcd.print("%");
+    lcd.setCursor(0, 0);
+    lcd.print(line_1);
 
-    lcd.setCursor(3, 1);
-    lcd.print("Cpu: ");
-    lcd.print(cpu, 1);
-    lcd.print("%");
+    lcd.setCursor(0, 1);
+    lcd.print(line_2);
   }
 }
 
