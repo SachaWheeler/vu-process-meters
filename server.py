@@ -4,26 +4,41 @@ from time import sleep
 import psutil
 
 TTY_PORT = "/dev/ttyACM0"
-BAUDRATE=115200
+BAUDRATE = 115200
+UPDATE_DELAY = 1
 
 # Open a serial connection (adjust the port and baudrate accordingly)
 ser = serial.Serial(TTY_PORT, BAUDRATE)
 
+io = psutil.net_io_counters()
+# extract the total bytes sent and received
+bytes_sent, bytes_recv = io.bytes_sent, io.bytes_recv
+
 # Function to send values to Arduino
-def send_values(value1, value2):
-    data = f"{value1},{value2}\n"
+def send_values(ram, cpu, up, down):
+    data = f"{ram},{cpu},{up},{down}\n"
     # print(data.strip())
     ser.write(data.encode())
-    sleep(0.1)  # Allow time for Arduino to process
+    # 1sleep(0.1)  # Allow time for Arduino to process
+
+# format bytes
+def get_size(bytes):
+    for unit in ['', 'K', 'M', 'G', 'T', 'P']:
+        if bytes < 1024:
+            return f"{bytes/UPDATE_DELAY:.1f}{unit}B/s"
+        bytes /= 1024
 
 print("Server running...")
 while True:
-    ram=float(psutil.virtual_memory().percent)
-    cpu=float(psutil.cpu_percent())
-    send_values(ram, cpu)
+    sleep(UPDATE_DELAY)
 
-    sleep(1)
+    ram = float(psutil.virtual_memory().percent)
+    cpu = float(psutil.cpu_percent())
 
-# Close the serial connection
+    io_2 = psutil.net_io_counters()
+    us, ds = io_2.bytes_sent - bytes_sent, io_2.bytes_recv - bytes_recv
+
+    send_values(ram, cpu, get_speed(us), get_speed(ds))
+
 ser.close()
 
