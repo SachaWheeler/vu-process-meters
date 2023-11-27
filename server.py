@@ -16,9 +16,9 @@ bytes_sent, bytes_recv = io.bytes_sent, io.bytes_recv
 
 # Function to send values to Arduino
 def send_values(ram, cpu, up, down):
-    # data = f"{ram},{cpu},{up},{down}\n"
-    data = (f"R {ram:>4}%  {get_size(up):>7},"
-            f"C {cpu:>4}%  {get_size(down):>7}\n")
+    # \1 and \2 are up and doown arrows defined in the arduino
+    data = (f"R {ram:>4}% \1{get_size(up):>7},"
+            f"C {cpu:>4}% \2{get_size(down):>7}\n")
     # print(data.strip())
     ser.write(data.encode())
     # 1sleep(0.1)  # Allow time for Arduino to process
