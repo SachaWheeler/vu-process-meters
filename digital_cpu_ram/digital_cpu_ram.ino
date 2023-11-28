@@ -1,14 +1,7 @@
-/* I2C LCD with Arduino example code. More info: https://www.makerguides.com */
-
-// Include the libraries:
-// LiquidCrystal_I2C.h: https://github.com/johnrickman/LiquidCrystal_I2C
-//#include  // Library for I2C communication
-//#include  // Library for LCD
 #include <LiquidCrystal_I2C.h>
 
-// Wiring: SDA pin is connected to A4 and SCL pin to A5.
-// Connect to LCD via I2C, default address 0x27 (A0-A2 not jumpered)
-LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);  // Change to (0x27,20,4) for 20x4 LCD.
+// Connect to LCD via I2C, default address 0x27
+LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x27, 16, 2);
 
 byte up_arrow[8] = {
   B00100,
@@ -55,7 +48,7 @@ void loop() {
       lcd.clear();
       cleared = true;
     }
-    // Read the incoming data until a newline character is received
+
     String data = Serial.readStringUntil('\n');
 
     String line_1 = data.substring(0, data.indexOf(','));
