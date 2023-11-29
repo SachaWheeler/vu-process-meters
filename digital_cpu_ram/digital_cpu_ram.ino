@@ -41,6 +41,7 @@ void setup() {
 }
 
 bool cleared = false;
+bool backlight = true;
 
 void loop() {
   if (Serial.available() > 0) {
@@ -51,8 +52,18 @@ void loop() {
 
     String data = Serial.readStringUntil('\n');
 
-    String line_1 = data.substring(0, data.indexOf(','));
+    int lock = data.substring(0, 1).toInt();
+    String line_1 = data.substring(1, data.indexOf(','));
     String line_2 = data.substring(data.indexOf(',') + 1);
+
+    if (lock == 0 && backlight == false) {
+      lcd.backlight();
+      backlight = true;
+    }
+    if (lock == 1 && backlight == true){
+      lcd.noBacklight();
+      backlight = false;
+    }
 
     lcd.setCursor(0, 0);
     lcd.print(line_1);

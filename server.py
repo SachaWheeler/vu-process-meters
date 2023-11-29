@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import serial
+import subprocess
 from time import sleep
 import psutil
 
@@ -12,9 +13,10 @@ ser = serial.Serial(TTY_PORT, BAUDRATE)
 io = psutil.net_io_counters()
 bytes_sent, bytes_recv = io.bytes_sent, io.bytes_recv
 
-def send_values(ram, cpu, up, dn):
+def send_values(ram, cpu, up, dn, screensaver):
     # \1 and \2 are up and down arrows defined in the arduino
-    data = (f"R {ram:>4}%  \1{get_size(up):>6},"
+    data = (f"{screensaver}"
+            f"R {ram:>4}%  \1{get_size(up):>6},"
             f"C {cpu:>4}%  \2{get_size(dn):>6}\n")
 
     ser.write(data.encode())
@@ -40,8 +42,12 @@ while True:
 
     # update values
     bytes_sent, bytes_recv = io_2.bytes_sent, io_2.bytes_recv
-
-    send_values(ram, cpu, us, ds)
+    locked = subprocess.Popen(['gnome-screensaver-command', '-q'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+    # print(locked.communicate()[0])
+    screensaver = 0 if 'inactive' in str(locked.communicate()[0]) else 1
+    send_values(ram, cpu, us, ds, screensaver)
 
 ser.close()
 
