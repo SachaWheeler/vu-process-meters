@@ -33,6 +33,7 @@ def get_size(bytes):
 print("Server running...")
 start_time = time()
 while True:
+    sleep(0.05)
     if (time() - start_time) > UPDATE_DELAY:
         start_time = time()
 
