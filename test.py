@@ -2,6 +2,10 @@
 import serial
 from time import sleep
 import psutil
+import os
+
+os.popen('gnome-screensaver-command --lock')
+
 
 ram=float(psutil.virtual_memory().percent)
 cpu=float(psutil.cpu_percent())

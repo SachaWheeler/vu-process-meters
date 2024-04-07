@@ -7,6 +7,8 @@ import psutil
 TTY_PORT = "/dev/ttyACM0"
 BAUDRATE = 115200
 UPDATE_DELAY = 1
+screensaver = 0
+prev_screensaver = screensaver
 
 ser = serial.Serial(TTY_PORT, BAUDRATE)
 
@@ -33,21 +35,28 @@ def get_size(bytes):
 print("Server running...")
 while True:
     sleep(UPDATE_DELAY)
-
-    ram = float(psutil.virtual_memory().percent)
-    cpu = float(psutil.cpu_percent())
-
-    io_2 = psutil.net_io_counters()
-    us, ds = io_2.bytes_sent - bytes_sent, io_2.bytes_recv - bytes_recv
-
-    # update values
-    bytes_sent, bytes_recv = io_2.bytes_sent, io_2.bytes_recv
     locked = subprocess.Popen(['gnome-screensaver-command', '-q'],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
     # print(locked.communicate()[0])
     screensaver = 0 if 'inactive' in str(locked.communicate()[0]) else 1
+
+    if screensaver == 0 or screensaver != prev_screensaver:
+        ram = float(psutil.virtual_memory().percent)
+        cpu = float(psutil.cpu_percent())
+
+        io_2 = psutil.net_io_counters()
+        us, ds = io_2.bytes_sent - bytes_sent, io_2.bytes_recv - bytes_recv
+
+        # update values
+        bytes_sent, bytes_recv = io_2.bytes_sent, io_2.bytes_recv
+        prev_screensaver = screensaver
+        # print("updating")
     send_values(ram, cpu, us, ds, screensaver)
+
+    if ser.in_waiting:
+        command = ser.readline().decode().strip()
+        print("Received command:", command)
 
 ser.close()
 
