@@ -1,5 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import serial
+# pip install pySerial
 import subprocess
 from time import sleep
 import psutil
